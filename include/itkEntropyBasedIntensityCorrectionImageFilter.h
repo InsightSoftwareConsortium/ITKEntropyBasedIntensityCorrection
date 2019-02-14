@@ -19,21 +19,24 @@
 #define itkEntropyBasedIntensityCorrectionImageFilter_h
 
 #include "itkImageToImageFilter.h"
+#include "itkBSplineScatteredDataPointSetToImageFilter.h"
+#include "itkPointSet.h"
+#include "itkVector.h"
 
 namespace itk
 {
 
 /** \class EntropyBasedIntensityCorrectionImageFilter
  *
- * \brief Filters a image by iterating over its pixels.
+ * \brief Create a b-spline intensity correction function by minimizing
+ * entropy.
  *
- * Filters a image by iterating over its pixels in a multi-threaded way
- * and {to be completed by the developer}.
+ * todo
  *
  * \ingroup EntropyBasedIntensityCorrection
  *
  */
-template< typename TInputImage, typename TOutputImage >
+template< typename TInputImage, typename TMaskImage, typename TOutputImage >
 class EntropyBasedIntensityCorrectionImageFilter: public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
@@ -43,15 +46,18 @@ public:
   static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
   using InputImageType = TInputImage;
-  using OutputImageType = TInputImage;
+  using MaskImageType = TMaskImage;
+  using OutputImageType = TOutputImage;
   using InputPixelType = typename InputImageType::PixelType;
   using OutputPixelType = typename OutputImageType::PixelType;
 
   /** Standard class typedefs. */
-  using Self = EntropyBasedIntensityCorrectionImageFilter< InputImageType, OutputImageType >;
+  using Self = EntropyBasedIntensityCorrectionImageFilter< InputImageType, MaskImageType, OutputImageType >;
   using Superclass = ImageToImageFilter< InputImageType, OutputImageType >;
   using Pointer = SmartPointer< Self >;
   using ConstPointer = SmartPointer< const Self >;
+
+  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Run-time type information. */
   itkTypeMacro( EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
@@ -60,6 +66,15 @@ public:
   itkNewMacro( Self );
 
 protected:
+  /** B-sline filter type alias */
+  using RealType = float;
+  using ScalarType = Vector< RealType, 1 >;
+  using PointSetType = PointSet< ScalarType, ImageDimension >;
+  using ScalarImageType = Image< ScalarType, ImageDimension >;
+  using BSplineFilterType = BSplineScatteredDataPointSetToImageFilter< PointSetType, ScalarImageType >;
+  using BiasFieldControlPointLatticeType = typename BSplineFilterType::PointDataImageType;
+  using ArrayType = typename BSplineFilterType::ArrayType;
+
   EntropyBasedIntensityCorrectionImageFilter();
   virtual ~EntropyBasedIntensityCorrectionImageFilter() override {}
 
@@ -67,7 +82,10 @@ protected:
 
   typedef typename OutputImageType::RegionType OutputRegionType;
 
-  virtual void DynamicThreadedGenerateData( const OutputRegionType & outputRegion) override;
+  /** Ensures that this filter can compute the entire output at once.  */
+  void EnlargeOutputRequestedRegion(DataObject*) override;
+
+  void GenerateData() override;
 
 private:
 

@@ -26,39 +26,50 @@
 namespace itk
 {
 
-template< typename TInputImage, typename TOutputImage >
-EntropyBasedIntensityCorrectionImageFilter< TInputImage, TOutputImage >
+template< typename TInputImage, typename TMaskImage, typename TOutputImage >
+EntropyBasedIntensityCorrectionImageFilter< TInputImage, TMaskImage, TOutputImage >
 ::EntropyBasedIntensityCorrectionImageFilter()
 {
 }
 
 
-template< typename TInputImage, typename TOutputImage >
+template< typename TInputImage, typename TMaskImage, typename TOutputImage >
 void
-EntropyBasedIntensityCorrectionImageFilter< TInputImage, TOutputImage >
+EntropyBasedIntensityCorrectionImageFilter< TInputImage, TMaskImage, TOutputImage >
 ::PrintSelf( std::ostream& os, Indent indent ) const
 {
   Superclass::PrintSelf( os, indent );
 }
 
 
-template< typename TInputImage, typename TOutputImage >
+template<typename TInputImage, typename TMaskImage, typename TOutputImage>
 void
-EntropyBasedIntensityCorrectionImageFilter< TInputImage, TOutputImage >
-::DynamicThreadedGenerateData( const OutputRegionType & outputRegion)
+EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>
+::EnlargeOutputRequestedRegion(DataObject *output)
+{
+  Superclass::EnlargeOutputRequestedRegion(output);
+
+  output->SetRequestedRegionToLargestPossibleRegion();
+}
+
+
+template< typename TInputImage, typename TMaskImage, typename TOutputImage >
+void
+EntropyBasedIntensityCorrectionImageFilter< TInputImage, TMaskImage, TOutputImage >
+::GenerateData()
 {
   OutputImageType * output = this->GetOutput();
   const InputImageType * input = this->GetInput();
   using InputRegionType = typename InputImageType::RegionType;
-  InputRegionType inputRegion = InputRegionType(outputRegion.GetSize());
+  //InputRegionType inputRegion = InputRegionType(outputRegion.GetSize());
 
-  itk::ImageRegionConstIterator<InputImageType> in(input, inputRegion);
-  itk::ImageRegionIterator<OutputImageType> out(output, outputRegion);
+  //itk::ImageRegionConstIterator<InputImageType> in(input, inputRegion);
+  //itk::ImageRegionIterator<OutputImageType> out(output, outputRegion);
 
-  for (in.GoToBegin(), out.GoToBegin(); !in.IsAtEnd() && !out.IsAtEnd(); ++in, ++out)
-  {
-    out.Set( in.Get() );
-  }
+  //for (in.GoToBegin(), out.GoToBegin(); !in.IsAtEnd() && !out.IsAtEnd(); ++in, ++out)
+  //{
+    //out.Set( in.Get() );
+  //}
 }
 
 } // end namespace itk

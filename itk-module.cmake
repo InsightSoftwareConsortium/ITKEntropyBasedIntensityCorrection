@@ -7,6 +7,7 @@ itk_module(EntropyBasedIntensityCorrection
     ITKCommon
   COMPILE_DEPENDS
     ITKImageSources
+    ITKImageGrid
   TEST_DEPENDS
     ITKTestKernel
   DESCRIPTION

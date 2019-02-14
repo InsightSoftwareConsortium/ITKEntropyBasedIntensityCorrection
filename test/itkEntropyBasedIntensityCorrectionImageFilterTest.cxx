@@ -67,12 +67,13 @@ int itkEntropyBasedIntensityCorrectionImageFilterTest( int argc, char * argv[] )
   const unsigned int Dimension = 2;
   using PixelType = unsigned char;
   using ImageType = itk::Image< PixelType, Dimension >;
+  using MaskImageType = ImageType;
 
   using ReaderType = itk::ImageFileReader< ImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( inputImageFileName );
 
-  using FilterType = itk::EntropyBasedIntensityCorrectionImageFilter< ImageType, ImageType >;
+  using FilterType = itk::EntropyBasedIntensityCorrectionImageFilter< ImageType, MaskImageType, ImageType >;
   FilterType::Pointer filter = FilterType::New();
 
   EXERCISE_BASIC_OBJECT_METHODS( filter, EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
