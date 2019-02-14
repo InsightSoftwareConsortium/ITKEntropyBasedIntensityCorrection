@@ -19,6 +19,7 @@
 #include "itkEntropyBasedIntensityCorrectionImageFilter.h"
 
 #include "itkCommand.h"
+#include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkTestingMacros.h"
 
@@ -53,35 +54,32 @@ public:
 
 int itkEntropyBasedIntensityCorrectionImageFilterTest( int argc, char * argv[] )
 {
-  if( argc < 2 )
+  if( argc < 3 )
     {
     std::cerr << "Usage: " << argv[0];
-    std::cerr << " outputImage";
+    std::cerr << " inputImage outputImage";
     std::cerr << std::endl;
     return EXIT_FAILURE;
     }
+  const char * inputImageFileName  = argv[1];
   const char * outputImageFileName  = argv[1];
 
   const unsigned int Dimension = 2;
-  using PixelType = float;
+  using PixelType = unsigned char;
   using ImageType = itk::Image< PixelType, Dimension >;
+
+  using ReaderType = itk::ImageFileReader< ImageType >;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName( inputImageFileName );
 
   using FilterType = itk::EntropyBasedIntensityCorrectionImageFilter< ImageType, ImageType >;
   FilterType::Pointer filter = FilterType::New();
 
   EXERCISE_BASIC_OBJECT_METHODS( filter, EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
 
-  // Create input image to avoid test dependencies.
-  ImageType::SizeType size;
-  size.Fill( 128 );
-  ImageType::Pointer image = ImageType::New();
-  image->SetRegions( size );
-  image->Allocate();
-  image->FillBuffer(1.1f);
-
   ShowProgress::Pointer showProgress = ShowProgress::New();
   filter->AddObserver( itk::ProgressEvent(), showProgress );
-  filter->SetInput(image);
+  filter->SetInput( reader->GetOutput() );
 
   typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();

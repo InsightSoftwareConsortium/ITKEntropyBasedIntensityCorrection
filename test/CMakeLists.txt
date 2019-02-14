@@ -8,7 +8,7 @@ CreateTestDriver(EntropyBasedIntensityCorrectionImageFilter "${EntropyBasedInten
 
 itk_add_test(NAME itkEntropyBasedIntensityCorrectionImageFilterTest
   COMMAND EntropyBasedIntensityCorrectionImageFilterTestDriver
-    --compare
+    #--compare
     #${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha
     #DATA{Baseline/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha}
   itkEntropyBasedIntensityCorrectionImageFilterTest
