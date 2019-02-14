@@ -1,31 +1,16 @@
 itk_module_test()
 
-set(EntropyBasedIntensityCorrectionTests
-  itkMinimalStandardRandomVariateGeneratorTest.cxx
-  itkNormalDistributionImageSourceTest.cxx
-  itkEntropyBasedIntensityCorrectionTest.cxx
+set(EntropyBasedIntensityCorrectionImageFilterTests
+  itkEntropyBasedIntensityCorrectionImageFilterTest.cxx
   )
 
-CreateTestDriver(EntropyBasedIntensityCorrection "${EntropyBasedIntensityCorrection-Test_LIBRARIES}" "${EntropyBasedIntensityCorrectionTests}")
+CreateTestDriver(EntropyBasedIntensityCorrectionImageFilter "${EntropyBasedIntensityCorrectionImageFilter-Test_LIBRARIES}" "${EntropyBasedIntensityCorrectionImageFilterTests}")
 
-itk_add_test(NAME itkMinimalStandardRandomVariateGeneratorTest
-  COMMAND EntropyBasedIntensityCorrectionTestDriver itkMinimalStandardRandomVariateGeneratorTest
-  )
-
-itk_add_test(NAME itkEntropyBasedIntensityCorrectionTest
-  COMMAND EntropyBasedIntensityCorrectionTestDriver
+itk_add_test(NAME itkEntropyBasedIntensityCorrectionImageFilterTest
+  COMMAND EntropyBasedIntensityCorrectionImageFilterTestDriver
     --compare
-    ${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionTestOutput.mha
-    DATA{Baseline/itkEntropyBasedIntensityCorrectionTestOutput.mha}
-  itkEntropyBasedIntensityCorrectionTest
-    ${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionTestOutput.mha
-  )
-
-itk_add_test(NAME itkNormalDistributionImageSourceTest
-  COMMAND EntropyBasedIntensityCorrectionTestDriver --without-threads
-  --compare
-    ${ITK_TEST_OUTPUT_DIR}/itkNormalDistributionImageSourceTestOutput.mha
-    DATA{Baseline/itkNormalDistributionImageSourceTestOutput.mha}
-  itkNormalDistributionImageSourceTest
-    ${ITK_TEST_OUTPUT_DIR}/itkNormalDistributionImageSourceTestOutput.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha
+    DATA{Baseline/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha}
+  itkEntropyBasedIntensityCorrectionImageFilterTest
+    ${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha
   )

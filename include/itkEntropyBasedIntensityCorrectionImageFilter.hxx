@@ -15,10 +15,10 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef itkEntropyBasedIntensityCorrection_hxx
-#define itkEntropyBasedIntensityCorrection_hxx
+#ifndef itkEntropyBasedIntensityCorrectionImageFilter_hxx
+#define itkEntropyBasedIntensityCorrectionImageFilter_hxx
 
-#include "itkEntropyBasedIntensityCorrection.h"
+#include "itkEntropyBasedIntensityCorrectionImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
@@ -27,15 +27,15 @@ namespace itk
 {
 
 template< typename TInputImage, typename TOutputImage >
-EntropyBasedIntensityCorrection< TInputImage, TOutputImage >
-::EntropyBasedIntensityCorrection()
+EntropyBasedIntensityCorrectionImageFilter< TInputImage, TOutputImage >
+::EntropyBasedIntensityCorrectionImageFilter()
 {
 }
 
 
 template< typename TInputImage, typename TOutputImage >
 void
-EntropyBasedIntensityCorrection< TInputImage, TOutputImage >
+EntropyBasedIntensityCorrectionImageFilter< TInputImage, TOutputImage >
 ::PrintSelf( std::ostream& os, Indent indent ) const
 {
   Superclass::PrintSelf( os, indent );
@@ -44,7 +44,7 @@ EntropyBasedIntensityCorrection< TInputImage, TOutputImage >
 
 template< typename TInputImage, typename TOutputImage >
 void
-EntropyBasedIntensityCorrection< TInputImage, TOutputImage >
+EntropyBasedIntensityCorrectionImageFilter< TInputImage, TOutputImage >
 ::DynamicThreadedGenerateData( const OutputRegionType & outputRegion)
 {
   OutputImageType * output = this->GetOutput();
@@ -63,4 +63,4 @@ EntropyBasedIntensityCorrection< TInputImage, TOutputImage >
 
 } // end namespace itk
 
-#endif // itkEntropyBasedIntensityCorrection_hxx
+#endif // itkEntropyBasedIntensityCorrectionImageFilter_hxx

@@ -15,15 +15,15 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef itkEntropyBasedIntensityCorrection_h
-#define itkEntropyBasedIntensityCorrection_h
+#ifndef itkEntropyBasedIntensityCorrectionImageFilter_h
+#define itkEntropyBasedIntensityCorrectionImageFilter_h
 
 #include "itkImageToImageFilter.h"
 
 namespace itk
 {
 
-/** \class EntropyBasedIntensityCorrection
+/** \class EntropyBasedIntensityCorrectionImageFilter
  *
  * \brief Filters a image by iterating over its pixels.
  *
@@ -34,10 +34,10 @@ namespace itk
  *
  */
 template< typename TInputImage, typename TOutputImage >
-class EntropyBasedIntensityCorrection: public ImageToImageFilter< TInputImage, TOutputImage >
+class EntropyBasedIntensityCorrectionImageFilter: public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EntropyBasedIntensityCorrection);
+  ITK_DISALLOW_COPY_AND_ASSIGN(EntropyBasedIntensityCorrectionImageFilter);
 
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
   static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
@@ -48,20 +48,20 @@ public:
   using OutputPixelType = typename OutputImageType::PixelType;
 
   /** Standard class typedefs. */
-  using Self = EntropyBasedIntensityCorrection< InputImageType, OutputImageType >;
+  using Self = EntropyBasedIntensityCorrectionImageFilter< InputImageType, OutputImageType >;
   using Superclass = ImageToImageFilter< InputImageType, OutputImageType >;
   using Pointer = SmartPointer< Self >;
   using ConstPointer = SmartPointer< const Self >;
 
   /** Run-time type information. */
-  itkTypeMacro( EntropyBasedIntensityCorrection, ImageToImageFilter );
+  itkTypeMacro( EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
 
   /** Standard New macro. */
   itkNewMacro( Self );
 
 protected:
-  EntropyBasedIntensityCorrection();
-  virtual ~EntropyBasedIntensityCorrection() override {}
+  EntropyBasedIntensityCorrectionImageFilter();
+  virtual ~EntropyBasedIntensityCorrectionImageFilter() override {}
 
   void PrintSelf( std::ostream& os, Indent indent ) const override;
 
@@ -80,7 +80,7 @@ private:
 }
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkEntropyBasedIntensityCorrection.hxx"
+#include "itkEntropyBasedIntensityCorrectionImageFilter.hxx"
 #endif
 
-#endif // itkEntropyBasedIntensityCorrection
+#endif // itkEntropyBasedIntensityCorrectionImageFilter

@@ -1,5 +1,0 @@
-set(EntropyBasedIntensityCorrection_SRCS
-  itkMinimalStandardRandomVariateGenerator.cxx
-  )
-
-itk_module_add_library(EntropyBasedIntensityCorrection ${EntropyBasedIntensityCorrection_SRCS})

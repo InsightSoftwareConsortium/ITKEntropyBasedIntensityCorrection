@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "itkEntropyBasedIntensityCorrection.h"
+#include "itkEntropyBasedIntensityCorrectionImageFilter.h"
 
 #include "itkCommand.h"
 #include "itkImageFileWriter.h"
@@ -51,7 +51,7 @@ public:
 };
 }
 
-int itkEntropyBasedIntensityCorrectionTest( int argc, char * argv[] )
+int itkEntropyBasedIntensityCorrectionImageFilterTest( int argc, char * argv[] )
 {
   if( argc < 2 )
     {
@@ -66,10 +66,10 @@ int itkEntropyBasedIntensityCorrectionTest( int argc, char * argv[] )
   using PixelType = float;
   using ImageType = itk::Image< PixelType, Dimension >;
 
-  using FilterType = itk::EntropyBasedIntensityCorrection< ImageType, ImageType >;
+  using FilterType = itk::EntropyBasedIntensityCorrectionImageFilter< ImageType, ImageType >;
   FilterType::Pointer filter = FilterType::New();
 
-  EXERCISE_BASIC_OBJECT_METHODS( filter, EntropyBasedIntensityCorrection, ImageToImageFilter );
+  EXERCISE_BASIC_OBJECT_METHODS( filter, EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
 
   // Create input image to avoid test dependencies.
   ImageType::SizeType size;
