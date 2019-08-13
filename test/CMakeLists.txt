@@ -1,13 +1,13 @@
 itk_module_test()
 
-set(EntropyBasedIntensityCorrectionImageFilterTests
+set(EntropyBasedIntensityCorrectionTests
   itkEntropyBasedIntensityCorrectionImageFilterTest.cxx
   )
 
-CreateTestDriver(EntropyBasedIntensityCorrectionImageFilter "${EntropyBasedIntensityCorrectionImageFilter-Test_LIBRARIES}" "${EntropyBasedIntensityCorrectionImageFilterTests}")
+CreateTestDriver(EntropyBasedIntensityCorrection "${EntropyBasedIntensityCorrection-Test_LIBRARIES}" "${EntropyBasedIntensityCorrectionTests}")
 
 itk_add_test(NAME itkEntropyBasedIntensityCorrectionImageFilterTest
-  COMMAND EntropyBasedIntensityCorrectionImageFilterTestDriver
+  COMMAND EntropyBasedIntensityCorrectionTestDriver
     #--compare
     #${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha
     #DATA{Baseline/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha}

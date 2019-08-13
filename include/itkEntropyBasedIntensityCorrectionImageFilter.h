@@ -22,6 +22,7 @@
 #include "itkBSplineScatteredDataPointSetToImageFilter.h"
 #include "itkPointSet.h"
 #include "itkVector.h"
+#include "itkScalarImageToHistogramGenerator.h"
 
 namespace itk
 {
@@ -65,6 +66,10 @@ public:
   /** Standard New macro. */
   itkNewMacro( Self );
 
+  /** Number of histogram bins for entropy calculation. */
+  itkSetMacro( NumberOfBins, unsigned int );
+  itkGetConstMacro( NumberOfBins, unsigned int );
+
 protected:
   /** B-sline filter type alias */
   using RealType = float;
@@ -74,6 +79,8 @@ protected:
   using BSplineFilterType = BSplineScatteredDataPointSetToImageFilter< PointSetType, ScalarImageType >;
   using BiasFieldControlPointLatticeType = typename BSplineFilterType::PointDataImageType;
   using ArrayType = typename BSplineFilterType::ArrayType;
+
+  using ImageToHistogramFilterType = Statistics::ScalarImageToHistogramGenerator< InputImageType >;
 
   EntropyBasedIntensityCorrectionImageFilter();
   virtual ~EntropyBasedIntensityCorrectionImageFilter() override {}
@@ -87,6 +94,10 @@ protected:
 
   void GenerateData() override;
 
+  typename BSplineFilterType::Pointer          m_BSplineFilter;
+  typename ImageToHistogramFilterType::Pointer m_ImageToHistogramFilter;
+
+  unsigned int m_NumberOfBins{ 32 };
 private:
 
 
