@@ -76,7 +76,7 @@ int itkEntropyBasedIntensityCorrectionImageFilterTest( int argc, char * argv[] )
   using FilterType = itk::EntropyBasedIntensityCorrectionImageFilter< ImageType, MaskImageType, ImageType >;
   FilterType::Pointer filter = FilterType::New();
 
-  EXERCISE_BASIC_OBJECT_METHODS( filter, EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
+  ITK_EXERCISE_BASIC_OBJECT_METHODS( filter, EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
 
   ShowProgress::Pointer showProgress = ShowProgress::New();
   filter->AddObserver( itk::ProgressEvent(), showProgress );
@@ -88,7 +88,7 @@ int itkEntropyBasedIntensityCorrectionImageFilterTest( int argc, char * argv[] )
   writer->SetInput( filter->GetOutput() );
   writer->SetUseCompression(true);
 
-  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
+  ITK_TRY_EXPECT_NO_EXCEPTION( writer->Update() );
 
 
   return EXIT_SUCCESS;
