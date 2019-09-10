@@ -62,7 +62,7 @@ int itkEntropyBasedIntensityCorrectionImageFilterTest( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
   const char * inputImageFileName  = argv[1];
-  const char * outputImageFileName  = argv[1];
+  const char * outputImageFileName  = argv[2];
 
   const unsigned int Dimension = 2;
   using PixelType = unsigned char;
