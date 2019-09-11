@@ -27,28 +27,28 @@
 namespace itk
 {
 
-template< typename TInputImage, typename TMaskImage, typename TOutputImage >
-EntropyBasedIntensityCorrectionImageFilter< TInputImage, TMaskImage, TOutputImage >
-::EntropyBasedIntensityCorrectionImageFilter()
+template <typename TInputImage, typename TMaskImage, typename TOutputImage>
+EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::
+  EntropyBasedIntensityCorrectionImageFilter()
 {
   this->m_BSplineFilter = BSplineFilterType::New();
   this->m_ImageToHistogramFilter = ImageToHistogramFilterType::New();
 }
 
 
-template< typename TInputImage, typename TMaskImage, typename TOutputImage >
+template <typename TInputImage, typename TMaskImage, typename TOutputImage>
 void
-EntropyBasedIntensityCorrectionImageFilter< TInputImage, TMaskImage, TOutputImage >
-::PrintSelf( std::ostream& os, Indent indent ) const
+EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::PrintSelf(std::ostream & os,
+                                                                                             Indent indent) const
 {
-  Superclass::PrintSelf( os, indent );
+  Superclass::PrintSelf(os, indent);
 }
 
 
-template<typename TInputImage, typename TMaskImage, typename TOutputImage>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage>
 void
-EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>
-::EnlargeOutputRequestedRegion(DataObject *output)
+EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::EnlargeOutputRequestedRegion(
+  DataObject * output)
 {
   Superclass::EnlargeOutputRequestedRegion(output);
 
@@ -56,59 +56,58 @@ EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage
 }
 
 
-template< typename TInputImage, typename TMaskImage, typename TOutputImage >
+template <typename TInputImage, typename TMaskImage, typename TOutputImage>
 void
-EntropyBasedIntensityCorrectionImageFilter< TInputImage, TMaskImage, TOutputImage >
-::GenerateData()
+EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::GenerateData()
 {
   this->AllocateOutputs();
 
   OutputImageType * output = this->GetOutput();
-  InputImageType * input = const_cast< InputImageType * >( this->GetInput() );
+  InputImageType *  input = const_cast<InputImageType *>(this->GetInput());
   using InputRegionType = typename InputImageType::RegionType;
 
   input->Update();
-  m_ImageToHistogramFilter->SetInput( input );
-  m_ImageToHistogramFilter->SetNumberOfBins( this->m_NumberOfBins );
-  m_ImageToHistogramFilter->SetAutoHistogramMinimumMaximum( true );
-  m_ImageToHistogramFilter->SetMarginalScale( 10.0 );
+  m_ImageToHistogramFilter->SetInput(input);
+  m_ImageToHistogramFilter->SetNumberOfBins(this->m_NumberOfBins);
+  m_ImageToHistogramFilter->SetAutoHistogramMinimumMaximum(true);
+  m_ImageToHistogramFilter->SetMarginalScale(10.0);
   m_ImageToHistogramFilter->Compute();
-  m_ImageToHistogramFilter->Print( std::cout );
-  m_ImageToHistogramFilter->GetOutput()->Print( std::cout );
+  m_ImageToHistogramFilter->Print(std::cout);
+  m_ImageToHistogramFilter->GetOutput()->Print(std::cout);
 
   using HistogramType = typename ImageToHistogramFilterType::HistogramType;
   typename HistogramType::ConstPointer histogram = m_ImageToHistogramFilter->GetOutput();
-  for (SizeValueType ii = 0; ii < histogram->Size(); ++ii )
-    {
-    std::cout << ii << " " << histogram->GetFrequency( ii, 0 ) << std::endl;
-    }
+  for (SizeValueType ii = 0; ii < histogram->Size(); ++ii)
+  {
+    std::cout << ii << " " << histogram->GetFrequency(ii, 0) << std::endl;
+  }
 
-  const double totalFrequency = histogram->GetTotalFrequency();
-  CompensatedSummation< double > entropy;
+  const double                          totalFrequency = histogram->GetTotalFrequency();
+  CompensatedSummation<double>          entropy;
   typename HistogramType::ConstIterator itr = histogram->Begin();
   typename HistogramType::ConstIterator end = histogram->End();
-  const double log2 = std::log( 2.0 );
-  while( itr != end )
-    {
+  const double                          log2 = std::log(2.0);
+  while (itr != end)
+  {
     const double probability = itr.GetFrequency() / totalFrequency;
 
-    if( probability > 0.99 / totalFrequency )
-      {
-      entropy += - probability * std::log( probability ) / log2;
-      }
-    ++itr;
+    if (probability > 0.99 / totalFrequency)
+    {
+      entropy += -probability * std::log(probability) / log2;
     }
+    ++itr;
+  }
   std::cout << "Entropy: " << entropy.GetSum() << std::endl;
 
 
-  //InputRegionType inputRegion = InputRegionType(outputRegion.GetSize());
+  // InputRegionType inputRegion = InputRegionType(outputRegion.GetSize());
 
-  //itk::ImageRegionConstIterator<InputImageType> in(input, inputRegion);
-  //itk::ImageRegionIterator<OutputImageType> out(output, outputRegion);
+  // itk::ImageRegionConstIterator<InputImageType> in(input, inputRegion);
+  // itk::ImageRegionIterator<OutputImageType> out(output, outputRegion);
 
-  //for (in.GoToBegin(), out.GoToBegin(); !in.IsAtEnd() && !out.IsAtEnd(); ++in, ++out)
+  // for (in.GoToBegin(), out.GoToBegin(); !in.IsAtEnd() && !out.IsAtEnd(); ++in, ++out)
   //{
-    //out.Set( in.Get() );
+  // out.Set( in.Get() );
   //}
 }
 

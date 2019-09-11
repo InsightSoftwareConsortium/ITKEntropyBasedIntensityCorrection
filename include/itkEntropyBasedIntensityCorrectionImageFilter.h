@@ -37,7 +37,7 @@ namespace itk
  * \ingroup EntropyBasedIntensityCorrection
  *
  */
-template< typename TInputImage, typename TMaskImage, typename TOutputImage >
+template <typename TInputImage, typename TMaskImage, typename TOutputImage>
 class EntropyBasedIntensityCorrectionImageFilter: public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
@@ -52,64 +52,66 @@ public:
   using InputPixelType = typename InputImageType::PixelType;
   using OutputPixelType = typename OutputImageType::PixelType;
 
-  /** Standard class typedefs. */
-  using Self = EntropyBasedIntensityCorrectionImageFilter< InputImageType, MaskImageType, OutputImageType >;
-  using Superclass = ImageToImageFilter< InputImageType, OutputImageType >;
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  /** Standard class type alias. */
+  using Self = EntropyBasedIntensityCorrectionImageFilter<InputImageType, MaskImageType, OutputImageType>;
+  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Run-time type information. */
-  itkTypeMacro( EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter );
+  itkTypeMacro(EntropyBasedIntensityCorrectionImageFilter, ImageToImageFilter);
 
   /** Standard New macro. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Number of histogram bins for entropy calculation. */
-  itkSetMacro( NumberOfBins, unsigned int );
-  itkGetConstMacro( NumberOfBins, unsigned int );
+  itkSetMacro(NumberOfBins, unsigned int);
+  itkGetConstMacro(NumberOfBins, unsigned int);
 
 protected:
   /** B-sline filter type alias */
   using RealType = float;
-  using ScalarType = Vector< RealType, 1 >;
-  using PointSetType = PointSet< ScalarType, ImageDimension >;
-  using ScalarImageType = Image< ScalarType, ImageDimension >;
-  using BSplineFilterType = BSplineScatteredDataPointSetToImageFilter< PointSetType, ScalarImageType >;
+  using ScalarType = Vector<RealType, 1>;
+  using PointSetType = PointSet<ScalarType, ImageDimension>;
+  using ScalarImageType = Image<ScalarType, ImageDimension>;
+  using BSplineFilterType = BSplineScatteredDataPointSetToImageFilter<PointSetType, ScalarImageType>;
   using BiasFieldControlPointLatticeType = typename BSplineFilterType::PointDataImageType;
   using ArrayType = typename BSplineFilterType::ArrayType;
 
-  using ImageToHistogramFilterType = Statistics::ScalarImageToHistogramGenerator< InputImageType >;
+  using ImageToHistogramFilterType = Statistics::ScalarImageToHistogramGenerator<InputImageType>;
 
   EntropyBasedIntensityCorrectionImageFilter();
   virtual ~EntropyBasedIntensityCorrectionImageFilter() override {}
 
-  void PrintSelf( std::ostream& os, Indent indent ) const override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
-  typedef typename OutputImageType::RegionType OutputRegionType;
+  using OutputRegionType = typename OutputImageType::RegionType;
 
   /** Ensures that this filter can compute the entire output at once.  */
-  void EnlargeOutputRequestedRegion(DataObject*) override;
+  void
+  EnlargeOutputRequestedRegion(DataObject *) override;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   typename BSplineFilterType::Pointer          m_BSplineFilter;
   typename ImageToHistogramFilterType::Pointer m_ImageToHistogramFilter;
 
   unsigned int m_NumberOfBins{ 32 };
+
 private:
-
-
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Add concept checking such as
   // itkConceptMacro( FloatingPointPixel, ( itk::Concept::IsFloatingPoint< typename InputImageType::PixelType > ) );
 #endif
 };
-}
+} // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkEntropyBasedIntensityCorrectionImageFilter.hxx"
+#  include "itkEntropyBasedIntensityCorrectionImageFilter.hxx"
 #endif
 
 #endif // itkEntropyBasedIntensityCorrectionImageFilter
