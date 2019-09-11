@@ -38,7 +38,8 @@ namespace itk
  *
  */
 template <typename TInputImage, typename TMaskImage, typename TOutputImage>
-class EntropyBasedIntensityCorrectionImageFilter: public ImageToImageFilter< TInputImage, TOutputImage >
+class ITK_TEMPLATE_EXPORT EntropyBasedIntensityCorrectionImageFilter
+  : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(EntropyBasedIntensityCorrectionImageFilter);

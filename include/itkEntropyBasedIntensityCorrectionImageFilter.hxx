@@ -20,9 +20,8 @@
 
 #include "itkEntropyBasedIntensityCorrectionImageFilter.h"
 
-#include "itkCompensatedSummation.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionConstIterator.h"
+#include "itkImageEntropyCostFunction.h"
+#include "itkPowellOptimizerv4.h"
 
 namespace itk
 {
@@ -64,51 +63,40 @@ EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage
 
   OutputImageType * output = this->GetOutput();
   InputImageType *  input = const_cast<InputImageType *>(this->GetInput());
-  using InputRegionType = typename InputImageType::RegionType;
 
-  input->Update();
-  m_ImageToHistogramFilter->SetInput(input);
-  m_ImageToHistogramFilter->SetNumberOfBins(this->m_NumberOfBins);
-  m_ImageToHistogramFilter->SetAutoHistogramMinimumMaximum(true);
-  m_ImageToHistogramFilter->SetMarginalScale(10.0);
-  m_ImageToHistogramFilter->Compute();
-  m_ImageToHistogramFilter->Print(std::cout);
-  m_ImageToHistogramFilter->GetOutput()->Print(std::cout);
+  using EntropyCostType = ImageEntropyCostFunction<InputImageType, MaskImageType, OutputImageType>;
+  typename EntropyCostType::Pointer entropyCost = EntropyCostType::New();
+  entropyCost->SetImage(input);
 
-  using HistogramType = typename ImageToHistogramFilterType::HistogramType;
-  typename HistogramType::ConstPointer histogram = m_ImageToHistogramFilter->GetOutput();
-  for (SizeValueType ii = 0; ii < histogram->Size(); ++ii)
-  {
-    std::cout << ii << " " << histogram->GetFrequency(ii, 0) << std::endl;
-  }
+  using OptimizerType = PowellOptimizerv4<typename EntropyCostType::ParametersValueType>;
+  typename OptimizerType::Pointer optimizer = OptimizerType::New();
 
-  const double                          totalFrequency = histogram->GetTotalFrequency();
-  CompensatedSummation<double>          entropy;
-  typename HistogramType::ConstIterator itr = histogram->Begin();
-  typename HistogramType::ConstIterator end = histogram->End();
-  const double                          log2 = std::log(2.0);
-  while (itr != end)
-  {
-    const double probability = itr.GetFrequency() / totalFrequency;
+  optimizer->SetMetric(entropyCost);
+  //optimizer->SetDoEstimateScales(false);
+  optimizer->SetNumberOfIterations(10);
+  optimizer->SetStepTolerance(0.1);
+  optimizer->SetStepLength(0.5);
 
-    if (probability > 0.99 / totalFrequency)
-    {
-      entropy += -probability * std::log(probability) / log2;
-    }
-    ++itr;
-  }
-  std::cout << "Entropy: " << entropy.GetSum() << std::endl;
-
-
-  // InputRegionType inputRegion = InputRegionType(outputRegion.GetSize());
-
-  // itk::ImageRegionConstIterator<InputImageType> in(input, inputRegion);
-  // itk::ImageRegionIterator<OutputImageType> out(output, outputRegion);
-
-  // for (in.GoToBegin(), out.GoToBegin(); !in.IsAtEnd() && !out.IsAtEnd(); ++in, ++out)
+  optimizer->StartOptimization();
+  //try
   //{
-  // out.Set( in.Get() );
+  //  optimizer->StartOptimization();
   //}
+  //catch (itk::ExceptionObject e)
+  //{
+  //  std::cerr << e << std::endl;
+  //  return;
+  //}
+
+  EntropyCostType::ParametersType params = optimizer->GetCurrentPosition();
+  std::cout << '\n' << optimizer->GetStopConditionDescription() << std::endl << std::endl;
+  std::cout << "\nParams: " << params;
+  std::cout << "\nCost: " << optimizer->GetCurrentMetricValue();
+  std::cout << "\nIterations: " << optimizer->GetCurrentIteration();
+
+  entropyCost->SetParameters(params); // in case the last evaluation was not done with the best parameters
+
+  entropyCost->GetCorrectedImage(output);
 }
 
 } // end namespace itk

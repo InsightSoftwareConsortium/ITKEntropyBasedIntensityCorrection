@@ -6,6 +6,7 @@ itk_module(EntropyBasedIntensityCorrection
   DEPENDS
     ITKCommon
     ITKStatistics
+    ITKOptimizersv4
   COMPILE_DEPENDS
     ITKImageSources
     ITKImageGrid
