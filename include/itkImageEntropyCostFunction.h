@@ -23,6 +23,9 @@
 #include "itkObjectToObjectMetricBase.h"
 #include "itkBSplineTransform.h"
 
+#include "itkTransformFileWriter.h" // debug
+#include "itkTransformFactory.h" // debug
+
 namespace itk
 {
 
@@ -173,12 +176,22 @@ protected:
 
   ImageEntropyCostFunction()
   {
-    m_Parameters = ParametersType(this->GetNumberOfParameters());
-    m_Parameters.Fill(0.0);
     m_Transform = TransformType::New();
+    // m_Transform->SetFixedParametersFromTransformDomainInformation();
+
     m_TransformParameters = TransformType::ParametersType(m_Transform->GetNumberOfParameters());
     m_TransformParameters.Fill(0.0);
     m_Transform->SetParameters(m_TransformParameters);
+
+    TransformFactory<TransformType>::RegisterTransform();
+    TransformFileWriterTemplate<InputRealType>::Pointer writer =
+      TransformFileWriterTemplate<InputRealType>::New();
+    writer->SetInput(m_Transform);
+    writer->SetFileName("C:/a/aImageEntropyCostFunction.tfm");
+    writer->Update();
+
+    m_Parameters = ParametersType(this->GetNumberOfParameters());
+    m_Parameters.Fill(0.0);
   }
   ~ImageEntropyCostFunction() override { m_Image = nullptr; }
 

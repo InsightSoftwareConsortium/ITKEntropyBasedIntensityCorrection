@@ -8,7 +8,7 @@ CreateTestDriver(EntropyBasedIntensityCorrection "${EntropyBasedIntensityCorrect
 
 itk_add_test(NAME itkEntropyBasedIntensityCorrectionImageFilterTest
   COMMAND EntropyBasedIntensityCorrectionTestDriver
-    --compare DATA{Baseline/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha}
+    --compare DATA{Baseline/itkEntropyBasedIntensityCorrectionTestOutput.mha}
     ${ITK_TEST_OUTPUT_DIR}/itkEntropyBasedIntensityCorrectionImageFilterTestOutput.mha
   itkEntropyBasedIntensityCorrectionImageFilterTest
     DATA{Input/tass.png}

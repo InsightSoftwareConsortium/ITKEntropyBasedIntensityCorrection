@@ -7,11 +7,13 @@ itk_module(EntropyBasedIntensityCorrection
     ITKCommon
     ITKStatistics
     ITKOptimizersv4
+    ITKIOTransformBase # debugging
   COMPILE_DEPENDS
     ITKImageSources
     ITKImageGrid
   TEST_DEPENDS
     ITKTestKernel
+    ITKIOTransformInsightLegacy
   DESCRIPTION
     "${DOCUMENTATION}"
   EXCLUDE_FROM_DEFAULT

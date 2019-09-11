@@ -22,6 +22,7 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkTestingMacros.h"
+#include "itkTxtTransformIOFactory.h" // debug
 
 namespace
 {
@@ -65,6 +66,8 @@ itkEntropyBasedIntensityCorrectionImageFilterTest(int argc, char * argv[])
   }
   const char * inputImageFileName = argv[1];
   const char * outputImageFileName = argv[2];
+
+  itk::TxtTransformIOFactory::RegisterOneFactory();
 
   const unsigned int Dimension = 2;
   using PixelType = unsigned char;
