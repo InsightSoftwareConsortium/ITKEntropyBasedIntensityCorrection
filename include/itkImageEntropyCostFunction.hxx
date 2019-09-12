@@ -25,7 +25,7 @@ namespace itk
 {
 template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
 void
-ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::Initialize(void) throw(ExceptionObject)
+ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::Initialize() throw(ExceptionObject)
 {
   if (!m_Image)
   {
@@ -49,7 +49,7 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::I
   }
 
   using CoefficientImageType = typename TransformType::ImageType;
-  CoefficientImageType::Pointer zeroImage = CoefficientImageType::New();
+  typename CoefficientImageType::Pointer zeroImage = CoefficientImageType::New();
   zeroImage->SetDirection(m_Image->GetDirection());
 
   //using InitializerType = itk::BSplineTransformInitializer<BSplineTransformType, FixedImageType>;

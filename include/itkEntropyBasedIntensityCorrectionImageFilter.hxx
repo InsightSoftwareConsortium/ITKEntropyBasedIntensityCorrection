@@ -88,7 +88,7 @@ EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage
   //  return;
   //}
 
-  EntropyCostType::ParametersType params = optimizer->GetCurrentPosition();
+  typename EntropyCostType::ParametersType params = optimizer->GetCurrentPosition();
   std::cout << '\n' << optimizer->GetStopConditionDescription() << std::endl << std::endl;
   std::cout << "\nParams: " << params;
   std::cout << "\nCost: " << optimizer->GetCurrentMetricValue();

@@ -37,7 +37,7 @@ namespace itk
  * \ingroup EntropyBasedIntensityCorrection
  *
  */
-template <typename TInputImage, typename TMaskImage, typename TOutputImage>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage=TInputImage>
 class ITK_TEMPLATE_EXPORT EntropyBasedIntensityCorrectionImageFilter
   : public ImageToImageFilter<TInputImage, TOutputImage>
 {

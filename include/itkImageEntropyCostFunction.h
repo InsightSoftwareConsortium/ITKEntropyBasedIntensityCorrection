@@ -51,7 +51,6 @@ public:
   using InputPixelType = typename InputImageType::PixelType;
   using OutputPixelType = typename OutputImageType::PixelType;
 
-  using InputPixelType = typename InputImageType::PixelType;
   using InputRealType = typename NumericTraits<InputPixelType>::RealType;
 
   /** Standard class type alias. */
@@ -211,7 +210,7 @@ protected:
 
     // debug
     TransformFactory<TransformType>::RegisterTransform();
-    TransformFileWriterTemplate<InputRealType>::Pointer writer = TransformFileWriterTemplate<InputRealType>::New();
+    typename TransformFileWriterTemplate<InputRealType>::Pointer writer = TransformFileWriterTemplate<InputRealType>::New();
     writer->SetInput(m_Transform);
     writer->SetFileName("C:/a/aImageEntropyCostFunction.tfm");
     writer->Update();

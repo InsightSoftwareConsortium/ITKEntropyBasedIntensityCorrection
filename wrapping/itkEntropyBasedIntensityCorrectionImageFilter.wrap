@@ -1,5 +1,6 @@
-itk_wrap_class("itk::EntropyBasedIntensityCorrection" POINTER)
-  itk_wrap_image_filter("${WRAP_ITK_SCALAR}" 2)
-  itk_wrap_image_filter("${WRAP_ITK_SCALAR}" 3)
+itk_wrap_class("itk::EntropyBasedIntensityCorrectionImageFilter" POINTER)
+  UNIQUE(types "${WRAP_ITK_SCALAR};${WRAP_ITK_COLOR}")
+  # we only use UC (unsigned char) for mask type
+  # we rely on output type being equal to input type by default
+  itk_wrap_image_filter_combinations("${types}" "UC" "${ITK_WRAP_IMAGE_DIMS}")
 itk_end_wrap_class()
-
