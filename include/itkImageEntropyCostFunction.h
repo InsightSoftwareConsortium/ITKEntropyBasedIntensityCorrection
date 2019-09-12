@@ -24,7 +24,7 @@
 #include "itkBSplineTransform.h"
 
 #include "itkTransformFileWriter.h" // debug
-#include "itkTransformFactory.h" // debug
+#include "itkTransformFactory.h"    // debug
 
 namespace itk
 {
@@ -77,10 +77,10 @@ public:
   /** Get the original image. */
   itkGetConstObjectMacro(Image, InputImageType);
 
-  /** Set the original image. */
+  /** Set the mask image. */
   itkSetConstObjectMacro(Mask, MaskImageType);
 
-  /** Get the original image. */
+  /** Get the mask image. */
   itkGetConstObjectMacro(Mask, MaskImageType);
 
   /** Get the corrected image, using current parameters. */
@@ -88,12 +88,11 @@ public:
   GetCorrectedImage(OutputImageType * output) const;
 
   /** Initialize the Metric by making sure that all the components
-   *  are present and plugged together correctly     */
+   *  are present and plugged together correctly. */
   void
   Initialize() throw(ExceptionObject) override;
 
 
-  // handle via macro?
   void
   SetParameters(ParametersType & params) override
   {
@@ -177,23 +176,28 @@ protected:
   ImageEntropyCostFunction()
   {
     m_Transform = TransformType::New();
-    // m_Transform->SetFixedParametersFromTransformDomainInformation();
 
     m_TransformParameters = TransformType::ParametersType(m_Transform->GetNumberOfParameters());
     m_TransformParameters.Fill(0.0);
     m_Transform->SetParameters(m_TransformParameters);
 
+    m_Parameters = ParametersType(this->GetNumberOfParameters());
+    m_Parameters.Fill(0.0);
+
+    // debug
     TransformFactory<TransformType>::RegisterTransform();
-    TransformFileWriterTemplate<InputRealType>::Pointer writer =
-      TransformFileWriterTemplate<InputRealType>::New();
+    TransformFileWriterTemplate<InputRealType>::Pointer writer = TransformFileWriterTemplate<InputRealType>::New();
     writer->SetInput(m_Transform);
     writer->SetFileName("C:/a/aImageEntropyCostFunction.tfm");
     writer->Update();
-
-    m_Parameters = ParametersType(this->GetNumberOfParameters());
-    m_Parameters.Fill(0.0);
   }
-  ~ImageEntropyCostFunction() override { m_Image = nullptr; }
+
+  ~ImageEntropyCostFunction() override
+  {
+    m_Image = nullptr;
+    m_Mask = nullptr;
+    m_Transform = nullptr;
+  }
 
   void
   PrintSelf(std::ostream & os, Indent indent) const;
