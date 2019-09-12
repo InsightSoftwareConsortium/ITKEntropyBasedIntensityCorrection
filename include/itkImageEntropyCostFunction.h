@@ -72,13 +72,38 @@ public:
   using CoordinateRepresentationType = typename Superclass::ParametersValueType;
 
   /** Set the original image. */
-  itkSetConstObjectMacro(Image, InputImageType);
+  virtual void
+  SetImage(const InputImageType * image)
+  {
+    if (this->m_Image != image)
+    {
+      this->m_Image = image;
+      this->Initialize();
+      this->Modified();
+    }
+  }
 
   /** Get the original image. */
   itkGetConstObjectMacro(Image, InputImageType);
 
   /** Set the mask image. */
-  itkSetConstObjectMacro(Mask, MaskImageType);
+  virtual void
+  SetMask(const InputImageType * mask)
+  {
+    if (this->m_Mask != mask)
+    {
+      if (!m_Image)
+      {
+        itkExceptionMacro(<< "Input image needs to be set first");
+      }
+      if (mask->GetBufferedRegion() != m_Image->GetBufferedRegion())
+      {
+        itkExceptionMacro(<< "Mask image's buffered region must match input image");
+      }
+      this->m_Mask = mask;
+      this->Modified();
+    }
+  }
 
   /** Get the mask image. */
   itkGetConstObjectMacro(Mask, MaskImageType);
@@ -205,10 +230,13 @@ protected:
   using TransformType = BSplineTransform<InputRealType, InputImageDimension + 1, VSplineOrder>;
 
 private:
-  typename InputImageType::ConstPointer  m_Image;
-  typename MaskImageType::ConstPointer   m_Mask;
-  typename TransformType::Pointer        m_Transform;
-  typename TransformType::ParametersType m_TransformParameters;
+  typename InputImageType::ConstPointer         m_Image;
+  typename MaskImageType::ConstPointer          m_Mask;
+  typename TransformType::Pointer               m_Transform;
+  typename TransformType::CoefficientImageArray m_AdditiveCoefficients;
+  typename TransformType::CoefficientImageArray m_MultiplicativeCoefficients;
+
+  typename TransformType::ParametersType        m_TransformParameters; // to remove
 
   bool                   m_NormalizeIntensities = true;
   mutable unsigned long  m_CurrentIteration = 0;

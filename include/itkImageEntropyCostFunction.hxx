@@ -23,7 +23,7 @@
 
 namespace itk
 {
-template<typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
 void
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::Initialize(void) throw(ExceptionObject)
 {
@@ -34,13 +34,35 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::I
 
   if (m_Image->GetBufferedRegion().GetNumberOfPixels() == 0)
   {
-    itkExceptionMacro(<< "Image is empty");
+    itkExceptionMacro(<< "Image's BufferedRegion is empty");
   }
 
   // If the image is provided by a source, update the source.
   if (m_Image->GetSource())
   {
     m_Image->GetSource()->Update();
+  }
+
+  if (m_Mask && m_Mask->GetBufferedRegion() != m_Image->GetBufferedRegion())
+  {
+    itkExceptionMacro(<< "Mask image's buffered region must match input image");
+  }
+
+  using CoefficientImageType = typename TransformType::ImageType;
+  CoefficientImageType::Pointer zeroImage = CoefficientImageType::New();
+  zeroImage->SetDirection(m_Image->GetDirection());
+
+  //using InitializerType = itk::BSplineTransformInitializer<BSplineTransformType, FixedImageType>;
+  //typename InitializerType::Pointer transformInitializer = InitializerType::New();
+
+  //transformInitializer->SetTransform(bsplineTx);
+  //transformInitializer->SetImage(initializationImage);
+  //transformInitializer->SetTransformDomainMeshSize(meshSize);
+  //transformInitializer->InitializeTransform();
+
+  for (unsigned d = 0; d < InputImageDimension; d++)
+  {
+    m_AdditiveCoefficients[d] = zeroImage;
   }
 
   m_Parameters = ParametersType(GetNumberOfParameters());
@@ -56,15 +78,16 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::I
 /**
  * PrintSelf
  */
-template<typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
 void
-ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::PrintSelf(std::ostream & os, Indent indent) const
+ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::PrintSelf(std::ostream & os,
+                                                                                         Indent         indent) const
 {
   Superclass::PrintSelf(os, indent);
   // m_NormalizeIntensities etc
 }
 
-template<typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
 void
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::GetCorrectedImage(
   OutputImageType * output) const
@@ -80,7 +103,7 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::G
   }
 }
 
-template<typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
 typename ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::MeasureType
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::GetValue() const
 {
