@@ -23,9 +23,9 @@
 
 namespace itk
 {
-template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder>
 void
-ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::Initialize() throw(ExceptionObject)
+ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::Initialize()
 {
   if (!m_Image)
   {
@@ -50,7 +50,7 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::I
 
   using CoefficientImageType = typename TransformType::ImageType;
   typename CoefficientImageType::Pointer zeroImage = CoefficientImageType::New();
-  zeroImage->SetDirection(m_Image->GetDirection());
+  //zeroImage->SetDirection(m_Image->GetDirection());
 
   //using InitializerType = itk::BSplineTransformInitializer<BSplineTransformType, FixedImageType>;
   //typename InitializerType::Pointer transformInitializer = InitializerType::New();
@@ -78,7 +78,7 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::I
 /**
  * PrintSelf
  */
-template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder>
 void
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::PrintSelf(std::ostream & os,
                                                                                          Indent         indent) const
@@ -87,7 +87,7 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::P
   // m_NormalizeIntensities etc
 }
 
-template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder>
 void
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::GetCorrectedImage(
   OutputImageType * output) const
@@ -103,7 +103,7 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::G
   }
 }
 
-template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder = 3>
+template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder>
 typename ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::MeasureType
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::GetValue() const
 {

@@ -114,7 +114,7 @@ public:
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly. */
   void
-  Initialize() throw(ExceptionObject) override;
+  Initialize() override;
 
 
   void
@@ -201,7 +201,7 @@ protected:
   {
     m_Transform = TransformType::New();
 
-    m_TransformParameters = TransformType::ParametersType(m_Transform->GetNumberOfParameters());
+    m_TransformParameters = typename TransformType::ParametersType(m_Transform->GetNumberOfParameters());
     m_TransformParameters.Fill(0.0);
     m_Transform->SetParameters(m_TransformParameters);
 
