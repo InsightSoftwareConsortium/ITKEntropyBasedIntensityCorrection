@@ -120,27 +120,27 @@ public:
   void
   SetParameters(ParametersType & params) override
   {
-    const NumberOfParametersType nParam = m_Transform->GetNumberOfParametersPerDimension();
-    const NumberOfParametersType nTotal = m_Transform->GetNumberOfParameters();
+    const NumberOfParametersType nParam = m_AddTransform->GetNumberOfParametersPerDimension();
+    const NumberOfParametersType nTotal = m_AddTransform->GetNumberOfParameters();
     const NumberOfParametersType nStart = nTotal - nParam;
-    for (unsigned i = 0; i < nParam; i++)
-    {
-      m_TransformParameters[nStart + i] = m_Parameters[i];
-    }
-    m_Transform->SetParameters(m_TransformParameters);
+    // for (unsigned i = 0; i < nParam; i++)
+    //{
+    //  m_TransformParameters[nStart + i] = m_Parameters[i];
+    //}
+    // m_AddTransform->SetParameters(m_TransformParameters);
     this->Modified();
   }
 
   const ParametersType &
   GetParameters() const override
   {
-    const NumberOfParametersType nParam = m_Transform->GetNumberOfParametersPerDimension();
-    const NumberOfParametersType nTotal = m_Transform->GetNumberOfParameters();
+    const NumberOfParametersType nParam = m_AddTransform->GetNumberOfParametersPerDimension();
+    const NumberOfParametersType nTotal = m_AddTransform->GetNumberOfParameters();
     const NumberOfParametersType nStart = nTotal - nParam;
-    for (unsigned i = 0; i < nParam; i++)
-    {
-      m_Parameters[i] = m_TransformParameters[nStart + i];
-    }
+    // for (unsigned i = 0; i < nParam; i++)
+    //{
+    //  m_Parameters[i] = m_TransformParameters[nStart + i];
+    //}
     return m_Parameters;
   }
 
@@ -150,7 +150,7 @@ public:
   NumberOfParametersType
   GetNumberOfParameters() const override
   {
-    return m_Transform->GetNumberOfParametersPerDimension();
+    return m_AddTransform->GetNumberOfParametersPerDimension();
   }
 
   NumberOfParametersType
@@ -192,50 +192,47 @@ public:
 
 protected:
   /** Constants for the image dimensions */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
-  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
-  static_assert(InputImageDimension == OutputImageDimension,
-                "Input image and output image must have the same dimension");
+  static constexpr unsigned int Dimension = TInputImage::ImageDimension;
+  static_assert(Dimension == TOutputImage::ImageDimension, "Input and output images must have the same dimension");
+
 
   ImageEntropyCostFunction()
   {
-    m_Transform = TransformType::New();
-
-    m_TransformParameters = typename TransformType::ParametersType(m_Transform->GetNumberOfParameters());
-    m_TransformParameters.Fill(0.0);
-    m_Transform->SetParameters(m_TransformParameters);
-
+    m_AddTransform = TransformType::New();
+    m_MulTransform = TransformType::New();
     m_Parameters = ParametersType(this->GetNumberOfParameters());
-    m_Parameters.Fill(0.0);
+    // m_Parameters.Fill(0.0);
 
-    // debug
+#ifndef NDEBUG
     TransformFactory<TransformType>::RegisterTransform();
-    typename TransformFileWriterTemplate<InputRealType>::Pointer writer = TransformFileWriterTemplate<InputRealType>::New();
-    writer->SetInput(m_Transform);
-    writer->SetFileName("C:/a/aImageEntropyCostFunction.tfm");
+    typename TransformFileWriterTemplate<InputRealType>::Pointer writer =
+      TransformFileWriterTemplate<InputRealType>::New();
+    writer->SetInput(m_AddTransform);
+    writer->SetFileName("aImageEntropyCostFunction.tfm");
     writer->Update();
+#endif // !NDEBUG
   }
 
   ~ImageEntropyCostFunction() override
   {
     m_Image = nullptr;
     m_Mask = nullptr;
-    m_Transform = nullptr;
+    m_AddTransform = nullptr;
+    m_MulTransform = nullptr;
   }
 
   void
   PrintSelf(std::ostream & os, Indent indent) const;
 
-  using TransformType = BSplineTransform<InputRealType, InputImageDimension + 1, VSplineOrder>;
+  using TransformType = BSplineTransform<InputRealType, Dimension + 1, VSplineOrder>;
 
 private:
   typename InputImageType::ConstPointer         m_Image;
   typename MaskImageType::ConstPointer          m_Mask;
-  typename TransformType::Pointer               m_Transform;
+  typename TransformType::Pointer               m_AddTransform;
+  typename TransformType::Pointer               m_MulTransform;
   typename TransformType::CoefficientImageArray m_AdditiveCoefficients;
   typename TransformType::CoefficientImageArray m_MultiplicativeCoefficients;
-
-  typename TransformType::ParametersType        m_TransformParameters; // to remove
 
   bool                   m_NormalizeIntensities = true;
   mutable unsigned long  m_CurrentIteration = 0;

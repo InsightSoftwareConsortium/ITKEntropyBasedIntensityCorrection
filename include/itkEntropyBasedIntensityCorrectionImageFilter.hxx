@@ -72,17 +72,17 @@ EntropyBasedIntensityCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage
   typename OptimizerType::Pointer optimizer = OptimizerType::New();
 
   optimizer->SetMetric(entropyCost);
-  //optimizer->SetDoEstimateScales(false);
+  // optimizer->SetDoEstimateScales(false);
   optimizer->SetNumberOfIterations(10);
   optimizer->SetStepTolerance(0.1);
   optimizer->SetStepLength(0.5);
 
   optimizer->StartOptimization();
-  //try
+  // try
   //{
   //  optimizer->StartOptimization();
   //}
-  //catch (itk::ExceptionObject e)
+  // catch (itk::ExceptionObject e)
   //{
   //  std::cerr << e << std::endl;
   //  return;

@@ -21,6 +21,8 @@
 
 #include "itkImageEntropyCostFunction.h"
 
+#include "itkBSplineTransformInitializer.h"
+
 namespace itk
 {
 template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsigned VSplineOrder>
@@ -31,39 +33,66 @@ ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::I
   {
     itkExceptionMacro(<< "Image is not present");
   }
-
-  if (m_Image->GetBufferedRegion().GetNumberOfPixels() == 0)
-  {
-    itkExceptionMacro(<< "Image's BufferedRegion is empty");
-  }
-
   // If the image is provided by a source, update the source.
   if (m_Image->GetSource())
   {
     m_Image->GetSource()->Update();
   }
 
-  if (m_Mask && m_Mask->GetBufferedRegion() != m_Image->GetBufferedRegion())
+  using InRegionType = typename InputImageType::RegionType;
+  InRegionType largestR = m_Image->GetLargestPossibleRegion();
+  InRegionType reqR = m_Image->GetRequestedRegion();
+
+  if (largestR.GetNumberOfPixels() == 0)
   {
-    itkExceptionMacro(<< "Mask image's buffered region must match input image");
+    itkExceptionMacro(<< "Image's LargestPossibleRegion is empty");
+  }
+  if (reqR.GetNumberOfPixels() == 0)
+  {
+    itkExceptionMacro(<< "Image's RequestedRegion is empty");
+  }
+  if (!m_Image->GetBufferedRegion().IsInside(reqR))
+  {
+    itkExceptionMacro(<< "Image's RequestedRegion is not (completely) contained in its own BufferedRegion");
+  }
+  if (m_Mask && !m_Mask->GetBufferedRegion().IsInside(reqR))
+  {
+    itkExceptionMacro(<< "Image's RequestedRegion is not (completely) contained in mask's BufferedRegion");
   }
 
   using CoefficientImageType = typename TransformType::ImageType;
   typename CoefficientImageType::Pointer zeroImage = CoefficientImageType::New();
-  //zeroImage->SetDirection(m_Image->GetDirection());
 
-  //using InitializerType = itk::BSplineTransformInitializer<BSplineTransformType, FixedImageType>;
-  //typename InitializerType::Pointer transformInitializer = InitializerType::New();
+  using CRegionType = typename CoefficientImageType::RegionType;
+  CRegionType reg;
+  // reg = zeroImage->GetBufferedRegion();
+  for (unsigned d = 0; d < Dimension + 1; d++)
+  {
+    reg.SetSize(d, 1 + VSplineOrder);
+  }
 
-  //transformInitializer->SetTransform(bsplineTx);
-  //transformInitializer->SetImage(initializationImage);
-  //transformInitializer->SetTransformDomainMeshSize(meshSize);
-  //transformInitializer->InitializeTransform();
 
-  for (unsigned d = 0; d < InputImageDimension; d++)
+  using InitializerType = BSplineTransformInitializer<TransformType, CoefficientImageType>;
+  typename InitializerType::Pointer    transformInitializer = InitializerType::New();
+  typename TransformType::MeshSizeType meshSize;
+  meshSize.Fill(1);
+  transformInitializer->SetTransformDomainMeshSize(meshSize);
+  transformInitializer->SetImage(zeroImage);
+
+  // now initialize both transforms
+  transformInitializer->SetTransform(m_AddTransform);
+  transformInitializer->InitializeTransform();
+  transformInitializer->SetTransform(m_MulTransform);
+  transformInitializer->InitializeTransform();
+
+  for (unsigned d = 0; d < Dimension; d++)
   {
     m_AdditiveCoefficients[d] = zeroImage;
+    m_MultiplicativeCoefficients[d] = zeroImage;
   }
+
+  // m_AdditiveCoefficients[Dimension] = firstPartOfparameters;
+  // m_MultiplicativeCoefficients[Dimension] = secondPartOfparameters;
 
   m_Parameters = ParametersType(GetNumberOfParameters());
   m_Parameters.Fill(0.0);
@@ -107,7 +136,37 @@ template <typename TInputImage, typename TMaskImage, typename TOutputImage, unsi
 typename ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::MeasureType
 ImageEntropyCostFunction<TInputImage, TMaskImage, TOutputImage, VSplineOrder>::GetValue() const
 {
-  itkDebugMacro("GetValue( " << m_Parameters << " ) ");
+  // m_ImageToHistogramFilter->SetInput(m_Image);
+  // m_ImageToHistogramFilter->SetNumberOfBins(this->m_NumberOfBins);
+  // m_ImageToHistogramFilter->SetAutoHistogramMinimumMaximum(true);
+  // m_ImageToHistogramFilter->SetMarginalScale(10.0);
+  // m_ImageToHistogramFilter->Compute();
+  // m_ImageToHistogramFilter->Print(std::cout);
+  // m_ImageToHistogramFilter->GetOutput()->Print(std::cout);
+
+  // using HistogramType = typename ImageToHistogramFilterType::HistogramType;
+  // typename HistogramType::ConstPointer histogram = m_ImageToHistogramFilter->GetOutput();
+  // for (SizeValueType ii = 0; ii < histogram->Size(); ++ii)
+  //{
+  //  std::cout << ii << " " << histogram->GetFrequency(ii, 0) << std::endl;
+  //}
+
+  // const double                          totalFrequency = histogram->GetTotalFrequency();
+  // CompensatedSummation<double>          entropy;
+  // typename HistogramType::ConstIterator itr = histogram->Begin();
+  // typename HistogramType::ConstIterator end = histogram->End();
+  // const double                          log2 = std::log(2.0);
+  // while (itr != end)
+  //{
+  //  const double probability = itr.GetFrequency() / totalFrequency;
+
+  //  if (probability > 0.99 / totalFrequency)
+  //  {
+  //    entropy += -probability * std::log(probability) / log2;
+  //  }
+  //  ++itr;
+  //}
+  // std::cout << "Entropy: " << entropy.GetSum() << std::endl;
 
   m_CurrentIteration++;
   return std::sqrt(m_CurrentIteration);
